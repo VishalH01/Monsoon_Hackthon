@@ -2,31 +2,39 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.Role;
 import com.example.demo.entity.SOS;
+import com.example.demo.entity.SOSPriority;
 import com.example.demo.entity.SOSStatus;
 import com.example.demo.entity.User;
 import com.example.demo.repository.SOSRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FileStorageService;
+import com.example.demo.service.PriorityCalculationService;
 import com.example.demo.service.SOSService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SOSServiceImpl implements SOSService {
 
     private final SOSRepository sosRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
+    private final PriorityCalculationService priorityCalculationService;
 
     @Override
     @Transactional
-    public SOS createSOS(String victimUsername, Double latitude, Double longitude, String description, MultipartFile image) {
+    public SOS createSOS(String victimUsername, Double latitude, Double longitude, String description, MultipartFile image,
+                          Integer age, Integer severity, Boolean hasChildren, Boolean isMedicalEmergency, Boolean isDisabled) {
         User victim = null;
         if (victimUsername != null && !victimUsername.trim().isEmpty()) {
             victim = userRepository.findByUsername(victimUsername)
@@ -40,6 +48,10 @@ public class SOSServiceImpl implements SOSService {
             imageUrl = "/uploads/" + storedFileName;
         }
 
+        // Calculate base priority score and initial priority
+        Double baseScore = priorityCalculationService.calculateBaseScore(age, severity, hasChildren, isMedicalEmergency, isDisabled);
+        SOSPriority initialPriority = priorityCalculationService.mapScoreToPriority(baseScore);
+
         SOS sos = SOS.builder()
                 .latitude(latitude)
                 .longitude(longitude)
@@ -47,6 +59,13 @@ public class SOSServiceImpl implements SOSService {
                 .imageUrl(imageUrl)
                 .status(SOSStatus.PENDING)
                 .victim(victim)
+                .age(age)
+                .severity(severity)
+                .hasChildren(hasChildren)
+                .isMedicalEmergency(isMedicalEmergency)
+                .isDisabled(isDisabled)
+                .basePriorityScore(baseScore)
+                .priority(initialPriority)
                 .build();
 
         return sosRepository.save(sos);
@@ -54,12 +73,14 @@ public class SOSServiceImpl implements SOSService {
 
     @Override
     public List<SOS> getAllSOS() {
-        return sosRepository.findAll();
+        List<SOS> list = sosRepository.findAll();
+        return sortSOSList(list);
     }
 
     @Override
     public List<SOS> getSOSByStatus(SOSStatus status) {
-        return sosRepository.findByStatus(status);
+        List<SOS> list = sosRepository.findByStatus(status);
+        return sortSOSList(list);
     }
 
     @Override
@@ -128,6 +149,48 @@ public class SOSServiceImpl implements SOSService {
 
     @Override
     public List<SOS> getMissionsForVolunteer(String volunteerUsername) {
-        return sosRepository.findByVolunteerUsername(volunteerUsername);
+        List<SOS> list = sosRepository.findByVolunteerUsername(volunteerUsername);
+        return sortSOSList(list);
+    }
+
+    /**
+     * Helper to dynamically sort the SOS alerts in memory by their real-time, waiting-time-adjusted priority scores.
+     */
+    private List<SOS> sortSOSList(List<SOS> list) {
+        return list.stream()
+                .sorted((a, b) -> {
+                    Double scoreA = priorityCalculationService.calculateDynamicScore(a.getBasePriorityScore(), a.getCreatedAt());
+                    Double scoreB = priorityCalculationService.calculateDynamicScore(b.getBasePriorityScore(), b.getCreatedAt());
+                    return scoreB.compareTo(scoreA); // Descending (highest score first)
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Background task that runs every minute to dynamically update and escalate priorities based on waiting time.
+     */
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void autoUpdatePriorities() {
+        log.info("Starting background task: Recalculating dynamic priorities for pending rescue calls...");
+        List<SOS> activeAlerts = sosRepository.findAll().stream()
+                .filter(sos -> sos.getStatus() == SOSStatus.PENDING || 
+                               sos.getStatus() == SOSStatus.ASSIGNED || 
+                               sos.getStatus() == SOSStatus.ACTIVE)
+                .collect(Collectors.toList());
+
+        int count = 0;
+        for (SOS sos : activeAlerts) {
+            Double dynamicScore = priorityCalculationService.calculateDynamicScore(sos.getBasePriorityScore(), sos.getCreatedAt());
+            SOSPriority newPriority = priorityCalculationService.mapScoreToPriority(dynamicScore);
+            
+            if (sos.getPriority() != newPriority) {
+                log.info("SOS Alert ID {} priority elevated: {} -> {}", sos.getId(), sos.getPriority(), newPriority);
+                sos.setPriority(newPriority);
+                sosRepository.save(sos);
+                count++;
+            }
+        }
+        log.info("Dynamic priority update complete. Elevated {} alerts.", count);
     }
 }

@@ -25,12 +25,18 @@ public class VictimSOSController {
             @RequestParam("latitude") Double latitude,
             @RequestParam("longitude") Double longitude,
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "age", required = false, defaultValue = "30") Integer age,
+            @RequestParam(value = "severity", required = false, defaultValue = "1") Integer severity,
+            @RequestParam(value = "hasChildren", required = false, defaultValue = "false") Boolean hasChildren,
+            @RequestParam(value = "isMedicalEmergency", required = false, defaultValue = "false") Boolean isMedicalEmergency,
+            @RequestParam(value = "isDisabled", required = false, defaultValue = "false") Boolean isDisabled) {
         
         String username = (principal != null) ? principal.getName() : null;
         
         try {
-            SOS sos = sosService.createSOS(username, latitude, longitude, description, image);
+            SOS sos = sosService.createSOS(username, latitude, longitude, description, image,
+                    age, severity, hasChildren, isMedicalEmergency, isDisabled);
             return ResponseEntity.ok(SOSResponse.fromEntity(sos));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error raising SOS: " + e.getMessage());

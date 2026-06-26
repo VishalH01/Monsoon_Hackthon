@@ -27,6 +27,18 @@ public class SOS {
 
     private String imageUrl;
 
+    // Prioritization Criteria
+    private Integer age;
+    private Integer severity;
+    private Boolean hasChildren;
+    private Boolean isMedicalEmergency;
+    private Boolean isDisabled;
+
+    @Enumerated(EnumType.STRING)
+    private SOSPriority priority;
+
+    private Double basePriorityScore;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SOSStatus status;

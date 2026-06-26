@@ -7,7 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface SOSService {
-    SOS createSOS(String victimUsername, Double latitude, Double longitude, String description, MultipartFile image);
+    SOS createSOS(String victimUsername, Double latitude, Double longitude, String description, MultipartFile image,
+                  Integer age, Integer severity, Boolean hasChildren, Boolean isMedicalEmergency, Boolean isDisabled);
     List<SOS> getAllSOS();
     List<SOS> getSOSByStatus(SOSStatus status);
     SOS getSOSById(Long id);
