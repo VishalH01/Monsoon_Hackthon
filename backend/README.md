@@ -1,30 +1,9 @@
 # Backend Workspace
 
-This directory is designated for the backend server / API of your hackathon project.
+This workspace contains the backend application for the ResQNest project.
 
-## Setup Instructions
+## ☕ Spring Boot Application
+We are using **Java (Spring Boot)** with Spring Security and JWT for the API.
 
-Depending on the backend framework you choose (e.g. Node.js with Express, Python with FastAPI/Flask), initialize the environment here.
-
-### Option A: Node.js + Express
-```bash
-# From the root directory:
-cd backend
-npm init -y
-npm install express
-# Set up entrypoint (e.g., index.js)
-```
-
-### Option B: Python (FastAPI/Flask)
-```bash
-# From the root directory:
-cd backend
-python -m venv venv
-# On Windows to activate:
-.\venv\Scripts\activate
-# Install requirements
-pip install fastapi uvicorn
-```
-
-## API Documentation
-*Document your endpoints and JSON schemas here as they are developed.*
+- **Main Application Folder**: [backend/ResQNest](file:///d:/Monsoon_Hackthon/backend/ResQNest/)
+- **Setup & Running Instructions**: See [backend/ResQNest/README.md](file:///d:/Monsoon_Hackthon/backend/ResQNest/README.md)
