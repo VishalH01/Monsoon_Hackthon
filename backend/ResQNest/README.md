@@ -216,7 +216,63 @@ Submit an emergency distress call. Supports optional text description and option
 
 ---
 
-### 4. Test Endpoints (Verifying Access Control)
+### 4. Dashboard Endpoint
+Provides aggregated statistics for Admins and NGOs to coordinate disaster response.
+
+#### 📊 Get Dashboard Analytics
+- **URL**: `/api/dashboard`
+- **Method**: `GET`
+- **Allowed Roles**: `ADMIN`, `NGO`
+- **Response**: `200 OK`
+  ```json
+  {
+    "activeSOSCount": 3,
+    "resolvedSOSCount": 12,
+    "volunteersOnline": 8,
+    "sheltersAvailable": 2,
+    "inventoryAlertsCount": 2,
+    "shelterOccupancyRate": 40.0,
+    "activeMissionsCount": 1,
+    "criticalInventoryAlerts": [
+      {
+        "id": 1,
+        "itemName": "Water Bottle Packs (24-pack)",
+        "quantity": 30,
+        "threshold": 100,
+        "category": "Water",
+        "unit": "Packs",
+        "updatedAt": "2026-06-26T12:00:00"
+      },
+      {
+        "id": 2,
+        "itemName": "Trauma First Aid Kits",
+        "quantity": 8,
+        "threshold": 20,
+        "category": "Medical",
+        "unit": "Kits",
+        "updatedAt": "2026-06-26T12:00:00"
+      }
+    ],
+    "recentSOSAlerts": [
+      {
+        "id": 5,
+        "latitude": 12.9716,
+        "longitude": 77.5946,
+        "description": "Flooding near Civic Plaza",
+        "imageUrl": null,
+        "status": "PENDING",
+        "victimUsername": "Guest",
+        "volunteerUsername": null,
+        "createdAt": "2026-06-26T12:45:00",
+        "updatedAt": "2026-06-26T12:45:00"
+      }
+    ]
+  }
+  ```
+
+---
+
+### 5. Test Endpoints (Verifying Access Control)
 Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_token>`
 
 | Endpoint | Method | Allowed Roles | Description |
