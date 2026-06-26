@@ -37,6 +37,8 @@ Detailed instructions for setup and running the frontend and backend are located
 
 ## Git Workflow & Collaboration Rules
 
+For detailed step-by-step instructions on setting up Git/GitHub, configuring authentication (SSH or HTTPS PAT), cloning the repository, and collaborating with branches, see the [GITHUB_SETUP.md](file:///d:/Monsoon_Hackthon/GITHUB_SETUP.md) guide.
+
 1. **Keep `main` stable**: Try not to commit broken code to the `main` branch.
 2. **Branching strategy** (Optional but recommended):
    - Create a branch for each feature: `git checkout -b feature/your-feature-name`
