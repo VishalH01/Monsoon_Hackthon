@@ -7,9 +7,11 @@ import com.example.demo.entity.SOSStatus;
 import com.example.demo.entity.User;
 import com.example.demo.repository.SOSRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.dto.SOSResponse;
 import com.example.demo.service.FileStorageService;
 import com.example.demo.service.PriorityCalculationService;
 import com.example.demo.service.SOSService;
+import com.example.demo.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,6 +32,7 @@ public class SOSServiceImpl implements SOSService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
     private final PriorityCalculationService priorityCalculationService;
+    private final WebSocketService webSocketService;
 
     @Override
     @Transactional
@@ -68,7 +71,15 @@ public class SOSServiceImpl implements SOSService {
                 .priority(initialPriority)
                 .build();
 
-        return sosRepository.save(sos);
+        SOS savedSos = sosRepository.save(sos);
+        try {
+            SOSResponse response = SOSResponse.fromEntity(savedSos);
+            webSocketService.broadcastNewSOS(response);
+            webSocketService.broadcastDashboardUpdate();
+        } catch (Exception e) {
+            log.error("Failed to broadcast WebSocket alerts for new SOS id {}", savedSos.getId(), e);
+        }
+        return savedSos;
     }
 
     @Override
@@ -102,7 +113,15 @@ public class SOSServiceImpl implements SOSService {
 
         sos.setVolunteer(volunteer);
         sos.setStatus(SOSStatus.ASSIGNED);
-        return sosRepository.save(sos);
+        SOS savedSos = sosRepository.save(sos);
+        try {
+            SOSResponse response = SOSResponse.fromEntity(savedSos);
+            webSocketService.broadcastVolunteerAccepted(response);
+            webSocketService.broadcastDashboardUpdate();
+        } catch (Exception e) {
+            log.error("Failed to broadcast WebSocket alerts for assigned volunteer, SOS id {}", savedSos.getId(), e);
+        }
+        return savedSos;
     }
 
     @Override
@@ -110,7 +129,19 @@ public class SOSServiceImpl implements SOSService {
     public SOS updateStatus(Long id, SOSStatus status) {
         SOS sos = getSOSById(id);
         sos.setStatus(status);
-        return sosRepository.save(sos);
+        SOS savedSos = sosRepository.save(sos);
+        try {
+            SOSResponse response = SOSResponse.fromEntity(savedSos);
+            if (status == SOSStatus.ASSIGNED || status == SOSStatus.ACTIVE) {
+                webSocketService.broadcastVolunteerAccepted(response);
+            } else if (status == SOSStatus.RESOLVED) {
+                webSocketService.broadcastReliefDelivered(response);
+            }
+            webSocketService.broadcastDashboardUpdate();
+        } catch (Exception e) {
+            log.error("Failed to broadcast WebSocket status update for SOS id {}", savedSos.getId(), e);
+        }
+        return savedSos;
     }
 
     @Override
@@ -127,7 +158,15 @@ public class SOSServiceImpl implements SOSService {
         }
 
         sos.setStatus(SOSStatus.ACTIVE);
-        return sosRepository.save(sos);
+        SOS savedSos = sosRepository.save(sos);
+        try {
+            SOSResponse response = SOSResponse.fromEntity(savedSos);
+            webSocketService.broadcastVolunteerAccepted(response);
+            webSocketService.broadcastDashboardUpdate();
+        } catch (Exception e) {
+            log.error("Failed to broadcast WebSocket alerts for accepted mission, SOS id {}", savedSos.getId(), e);
+        }
+        return savedSos;
     }
 
     @Override
@@ -144,7 +183,15 @@ public class SOSServiceImpl implements SOSService {
         }
 
         sos.setStatus(SOSStatus.RESOLVED);
-        return sosRepository.save(sos);
+        SOS savedSos = sosRepository.save(sos);
+        try {
+            SOSResponse response = SOSResponse.fromEntity(savedSos);
+            webSocketService.broadcastReliefDelivered(response);
+            webSocketService.broadcastDashboardUpdate();
+        } catch (Exception e) {
+            log.error("Failed to broadcast WebSocket alerts for resolved mission, SOS id {}", savedSos.getId(), e);
+        }
+        return savedSos;
     }
 
     @Override
