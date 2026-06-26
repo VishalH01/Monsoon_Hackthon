@@ -101,6 +101,12 @@
 			<artifactId>javase</artifactId>
 			<version>3.5.3</version>
 		</dependency>
+		<!-- Stripe Payments Support -->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>28.2.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa-test</artifactId>

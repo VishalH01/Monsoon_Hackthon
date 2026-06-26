@@ -461,6 +461,43 @@ Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_
 
 ---
 
+### 8. Stripe Payment Integration Module
+Provides secure, Stripe-hosted Checkout sessions for monetary donations, with automated database updates upon payment completion.
+
+#### 💳 Create Stripe Checkout Session
+Generates a Stripe Checkout Session URL for a pending monetary donation.
+- **URL**: `/api/v1/payments/create-session/{donationId}`
+- **Method**: `POST`
+- **Allowed Roles**: *Public* (or any role matching donation access)
+- **Response**: `200 OK`
+  ```json
+  {
+    "sessionId": "cs_test_a1b2c3...",
+    "checkoutUrl": "https://checkout.stripe.com/pay/cs_test_a1b2c3...",
+    "status": "unpaid",
+    "donationId": 5,
+    "amount": 150.0
+  }
+  ```
+
+#### 💳 Direct Redirect Success Verification (Backup Callback)
+Validates the status of a Stripe session on redirect and marks the donation as `RECEIVED`.
+- **URL**: `/api/v1/payments/success`
+- **Method**: `GET`
+- **Query Parameters**:
+  - `session_id` (String, Required) - The Stripe checkout session ID.
+  - `donation_id` (Long, Required) - The ID of the corresponding donation.
+- **Response**: `200 OK` `"Thank you! Your monetary relief donation has been verified and successfully processed."`
+
+#### 💳 Stripe Webhook Endpoint (Production Standard)
+Asynchronously processes Stripe events (specifically `checkout.session.completed`) to update donation status to `RECEIVED`.
+- **URL**: `/api/v1/payments/webhook`
+- **Method**: `POST`
+- **Request Header**: `Stripe-Signature` (Required)
+- **Response**: `200 OK` `"Webhook processed successfully."`
+
+---
+
 ## 🛠️ How to Build and Run the App
 
 1. Make sure you are in the `ResQNest` directory:
