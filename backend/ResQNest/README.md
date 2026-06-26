@@ -96,7 +96,127 @@ You can restrict endpoint access using Spring's `@PreAuthorize` annotation (e.g.
 
 ---
 
-### 2. Test Endpoints (Verifying Access Control)
+### 2. User Management Endpoints
+Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_token>`
+
+#### 👤 Get Current User Profile
+- **URL**: `/api/users/profile`
+- **Method**: `GET`
+- **Response**: `200 OK`
+  ```json
+  {
+    "id": 1,
+    "username": "john_doe",
+    "email": "john@example.com",
+    "role": "VOLUNTEER"
+  }
+  ```
+
+#### ✏️ Update Profile Details
+- **URL**: `/api/users/profile`
+- **Method**: `PUT`
+- **Request Body**:
+  ```json
+  {
+    "username": "john_doe_updated",
+    "email": "john_new@example.com"
+  }
+  ```
+- **Response**: `200 OK` (returns updated UserProfileResponse)
+
+#### 🔒 Change Password
+- **URL**: `/api/users/change-password`
+- **Method**: `PUT`
+- **Request Body**:
+  ```json
+  {
+    "currentPassword": "securepassword",
+    "newPassword": "newsecurepassword"
+  }
+  ```
+- **Response**: `200 OK` `"Password changed successfully!"`
+
+#### 👑 Admin User Management CRUD
+Admin actions are secured under `/api/admin/users`:
+- `GET /api/admin/users` - Retrieves a list of all users.
+- `GET /api/admin/users/{id}` - Retrieves a specific user by ID.
+- `PUT /api/admin/users/{id}` - Updates a user's details and role. Body:
+  ```json
+  {
+    "username": "updated_username",
+    "email": "updated_email@example.com",
+    "role": "SHELTER_MANAGER"
+  }
+  ```
+- `DELETE /api/admin/users/{id}` - Deletes a user by ID.
+
+---
+
+### 3. SOS Module Endpoints
+Distress calls, volunteer assignments, and mission state flows.
+
+#### 🚨 Raise One-Click SOS (Victim / Guest)
+Submit an emergency distress call. Supports optional text description and optional photo attachment.
+- **URL**: `/api/sos`
+- **Method**: `POST`
+- **Content-Type**: `multipart/form-data`
+- **Form Parameters**:
+  - `latitude` (Double, Required) - GPS Latitude.
+  - `longitude` (Double, Required) - GPS Longitude.
+  - `description` (String, Optional) - Short detail about the situation.
+  - `image` (File, Optional) - Image/photo file from camera or gallery.
+- **Response**: `200 OK`
+  ```json
+  {
+    "id": 1,
+    "latitude": 12.9716,
+    "longitude": 77.5946,
+    "description": "Flooding near the main road",
+    "imageUrl": "/uploads/a3b1-4c6e-8f92-image.jpg",
+    "status": "PENDING",
+    "victimUsername": "john_doe", // "Guest" if submitted unauthenticated
+    "volunteerUsername": null,
+    "createdAt": "2026-06-26T12:00:00",
+    "updatedAt": "2026-06-26T12:00:00"
+  }
+  ```
+
+#### 📋 View All SOS Alerts (Admin)
+- **URL**: `/api/admin/sos`
+- **Method**: `GET`
+- **Query Parameter**: `status` (Optional, values: `PENDING`, `ASSIGNED`, `ACTIVE`, `RESOLVED`)
+- **Response**: `200 OK` (list of SOSResponse objects)
+
+#### 🤝 Assign Volunteer to Mission (Admin)
+- **URL**: `/api/admin/sos/{id}/assign`
+- **Method**: `PUT`
+- **Query Parameter**: `volunteerId` (Required, ID of the volunteer user)
+- **Response**: `200 OK` (returns updated SOSResponse with status `ASSIGNED`)
+
+#### 🤝 Update SOS Status Directly (Admin)
+- **URL**: `/api/admin/sos/{id}/status`
+- **Method**: `PUT`
+- **Query Parameter**: `status` (Required, values: `PENDING`, `ASSIGNED`, `ACTIVE`, `RESOLVED`)
+- **Response**: `200 OK` (returns updated SOSResponse)
+
+#### 🗺️ View My Assigned Missions (Volunteer)
+- **URL**: `/api/volunteer/sos/my-missions`
+- **Method**: `GET`
+- **Response**: `200 OK` (returns a list of SOSResponse assigned to the volunteer)
+
+#### 🛡️ Accept a Mission (Volunteer)
+- **URL**: `/api/volunteer/sos/{id}/accept`
+- **Method**: `PUT`
+- **Response**: `200 OK` (returns updated SOSResponse with status `ACTIVE`)
+
+#### ✅ Complete a Mission (Volunteer)
+- **URL**: `/api/volunteer/sos/{id}/complete`
+- **Method**: `PUT`
+- **Response**: `200 OK` (returns updated SOSResponse with status `RESOLVED`)
+
+---
+
+### 4. Test Endpoints (Verifying Access Control)
 Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_token>`
 
 | Endpoint | Method | Allowed Roles | Description |
