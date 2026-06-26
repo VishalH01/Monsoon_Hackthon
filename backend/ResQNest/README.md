@@ -386,7 +386,49 @@ Clients (specifically Volunteers) can push coordinates in real-time. The server 
 
 ---
 
-### 6. Test Endpoints (Verifying Access Control)
+### 6. QR Code Verification Module
+Provides secure, time-sensitive QR code generation and verification to confirm relief deliveries.
+
+#### 🎫 Generate Verification QR Code
+Generates a time-sensitive verification token (valid for 15 minutes) and returns a scan-ready Base64-encoded PNG image.
+- **URL**: `/api/v1/qr/generate/{sosId}`
+- **Method**: `POST`
+- **Allowed Roles**: `VICTIM` (must own the SOS alert), `ADMIN`
+- **Response**: `200 OK`
+  ```json
+  {
+    "sosId": 12,
+    "token": "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6",
+    "expiresAt": "2026-06-26T13:40:00",
+    "qrCodeImageBase64": "data:image/png;base64,iVBORw0KGgoAAAANS..."
+  }
+  ```
+
+#### 🎫 Verify QR and Resolve Alert
+Verifies the scanned QR token. If the token is valid, has not expired, and the verifying user is the assigned volunteer (or admin), the SOS alert is marked as `RESOLVED`, the token is cleared, and WebSocket update events are broadcast.
+- **URL**: `/api/v1/qr/verify`
+- **Method**: `POST`
+- **Allowed Roles**: `VOLUNTEER` (must be assigned to the SOS alert), `ADMIN`
+- **Request Body**:
+  ```json
+  {
+    "sosId": 12,
+    "token": "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6"
+  }
+  ```
+- **Response**: `200 OK`
+  ```json
+  {
+    "success": true,
+    "message": "Relief successfully verified and delivered! Mission completed.",
+    "resolvedSosId": 12,
+    "resolvedAt": "2026-06-26T13:30:00"
+  }
+  ```
+
+---
+
+### 7. Test Endpoints (Verifying Access Control)
 Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_token>`
 
 | Endpoint | Method | Allowed Roles | Description |

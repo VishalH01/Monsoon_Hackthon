@@ -51,6 +51,10 @@ public class SOS {
     @JoinColumn(name = "volunteer_id")
     private User volunteer;
 
+    private String qrVerificationToken;
+
+    private LocalDateTime qrGeneratedAt;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
