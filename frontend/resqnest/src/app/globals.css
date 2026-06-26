@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
-  ReliefLink design system.
+  ResQNest design system.
   Ported from the team's Tailwind Play config into Tailwind v4 `@theme` tokens.
   Dark mode is class-based (the design ships forced-light), not OS-based.
 */
@@ -211,4 +211,94 @@ body {
   background: linear-gradient(90deg, #ffffff 25%, #f1f5f9 50%, #ffffff 75%);
   background-size: 200% 100%;
   animation: shimmer 5s infinite linear;
+}
+
+/* ---- Dashboard / SOS helpers ---- */
+
+/* Box-shadow-only pulse for the floating SOS button. */
+@keyframes sos-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+.sos-pulse-effect {
+  animation: sos-pulse 2s infinite;
+}
+
+/* 12-column bento layout for the victim dashboard. */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+/* Frosted-glass (no border) used on the SOS encrypted-connection banner. */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Thin themed scrollbar (from the dashboard design). */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e6bdb8;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #916f6b;
+}
+
+/* Slate scrollbar scoped to the volunteer dashboard canvas. */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 3px;
+}
+
+/* Fill sidebar nav icons on hover (replaces the original hover script). */
+.sidebar-nav a:hover .material-symbols-outlined {
+  font-variation-settings: "FILL" 1;
+}
+
+/* Red emergency pulse used on the Distribution emergency button. */
+@keyframes pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+.pulse-emergency {
+  animation: pulse-red 2s infinite;
+}
+
+/* Analytics dashboard card (admin command center). */
+.bento-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bento-card:hover {
+  transform: translateY(-2px);
 }

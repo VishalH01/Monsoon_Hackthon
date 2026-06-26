@@ -1,6 +1,6 @@
-# ReliefLink — Frontend (`resqnest`)
+# ResQNest — Frontend
 
-The frontend for **ReliefLink**, a mission-critical disaster management platform
+The frontend for **ResQNest**, a mission-critical disaster management platform
 for coordinating emergency response, tracking logistics, and connecting victims,
 volunteers, shelters, and admins.
 
@@ -11,6 +11,8 @@ volunteers, shelters, and admins.
 - **TypeScript**
 - **Tailwind CSS v4** (configured via `@theme` tokens in `src/app/globals.css`)
 - Fonts: **Inter** + **JetBrains Mono** (`next/font`), **Material Symbols** icons
+- **Leaflet** + **react-leaflet** (OpenStreetMap) for the `/map` page — loaded
+  client-side via `next/dynamic` (`ssr: false`) from `src/app/components/`
 
 ## Getting Started
 
@@ -24,11 +26,22 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Routes
 
-| URL          | Page                | Component                  |
-| ------------ | ------------------- | -------------------------- |
-| `/`          | Landing page        | `src/app/Pages/landing.tsx`  |
-| `/login`     | Operator login      | `src/app/Pages/login.tsx`    |
-| `/register`  | Account registration| `src/app/Pages/register.tsx` |
+| URL                | Page                 | Component                          |
+| ------------------ | -------------------- | ---------------------------------- |
+| `/`                | Landing page         | `src/app/Pages/landing.tsx`        |
+| `/login`           | Operator login       | `src/app/Pages/login.tsx`          |
+| `/register`        | Account registration | `src/app/Pages/register.tsx`       |
+| `/sos`                | Emergency SOS form  | `src/app/Pages/sos.tsx`                |
+| `/victim-dashboard`   | Victim dashboard    | `src/app/Pages/victimDashboard.tsx`    |
+| `/volunteer-dashboard`| Volunteer dashboard | `src/app/Pages/volunteerDashboard.tsx` |
+| `/shelter-dashboard`  | Shelter management  | `src/app/Pages/shelterDashboard.tsx`   |
+| `/profile`            | Profile management  | `src/app/Pages/profile.tsx`            |
+| `/missing-persons`    | Missing persons db  | `src/app/Pages/missingPersons.tsx`     |
+| `/distribution`       | Relief distribution | `src/app/Pages/distribution.tsx`       |
+| `/donations`          | Donation management | `src/app/Pages/donations.tsx`          |
+| `/inventory`          | Inventory management| `src/app/Pages/inventory.tsx`          |
+| `/admin-dashboard`    | Admin command center| `src/app/Pages/adminDashboard.tsx`     |
+| `/map`                | Live operations map | `src/app/Pages/map.tsx`                |
 
 ## Project Structure & Conventions
 
@@ -80,6 +93,7 @@ Use the shared tokens from `globals.css` so pages stay consistent:
 
 ## Pages roadmap
 
-Landing, Login, Register are done. Planned: VictimDashboard, VolunteerDashboard,
-AdminDashboard, ShelterDashboard, SOS, Map, Inventory Management, Analyze,
-Missing Person, Profile, Donation Management, Distribution.
+Done: Landing, Login, Register, SOS, VictimDashboard, VolunteerDashboard,
+ShelterDashboard, Profile, MissingPersons, Distribution, Donations, Inventory,
+AdminDashboard (doubles as the analytics/Analyze view), Map. All pages from the
+original list are now built.
