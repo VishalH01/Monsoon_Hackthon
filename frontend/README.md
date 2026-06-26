@@ -1,19 +1,18 @@
 # Frontend Workspace
 
-This directory is designated for the frontend application of your hackathon project.
+The ReliefLink frontend lives in [`resqnest/`](./resqnest) — a **Next.js 16 +
+React 19 + Tailwind CSS v4** app.
 
-## Setup Instructions
+## Quick Start
 
-Once you decide on a frontend framework (e.g., React with Vite, Next.js, etc.), you can initialize it here.
-
-For example, to set up a Vite React + TypeScript project, run:
 ```bash
-# From the root directory:
-cd frontend
-npm create vite@latest . -- --template react-ts
+cd frontend/resqnest
 npm install
 npm run dev
 ```
 
-## Folder Structure
-*After initialization, document the key components and folder layout here.*
+Then open [http://localhost:3000](http://localhost:3000).
+
+See [`resqnest/README.md`](./resqnest/README.md) for the full guide: available
+routes, the `Pages/` folder convention, how to add new pages, and the shared
+design system.
