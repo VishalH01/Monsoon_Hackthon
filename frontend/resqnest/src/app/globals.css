@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  ReliefLink design system.
+  Ported from the team's Tailwind Play config into Tailwind v4 `@theme` tokens.
+  Dark mode is class-based (the design ships forced-light), not OS-based.
+*/
+@custom-variant dark (&:where(.dark, .dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* ---- Font families ---- */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-body-md: var(--font-inter), sans-serif;
+  --font-body-sm: var(--font-inter), sans-serif;
+  --font-body-lg: var(--font-inter), sans-serif;
+  --font-label-md: var(--font-inter), sans-serif;
+  --font-headline-md: var(--font-inter), sans-serif;
+  --font-headline-lg: var(--font-inter), sans-serif;
+  --font-headline-lg-mobile: var(--font-inter), sans-serif;
+  --font-display-lg: var(--font-inter), sans-serif;
+  --font-mono-sm: var(--font-jetbrains-mono), monospace;
+
+  /* ---- Type scale ---- */
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 800;
+
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.01em;
+  --text-headline-lg--font-weight: 700;
+
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-lg-mobile--letter-spacing: -0.01em;
+  --text-headline-lg-mobile--font-weight: 700;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--font-weight: 400;
+
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.05em;
+  --text-label-md--font-weight: 600;
+
+  --text-mono-sm: 13px;
+  --text-mono-sm--line-height: 18px;
+  --text-mono-sm--font-weight: 400;
+
+  /* ---- Spacing tokens ---- */
+  --spacing-stack-sm: 8px;
+  --spacing-stack-md: 16px;
+  --spacing-stack-lg: 24px;
+  --spacing-gutter: 24px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 32px;
+  --spacing-sidebar-width: 280px;
+  --spacing-container-max: 1440px;
+
+  /* ---- Color system (Material 3 palette) ---- */
+  --color-background: #fff8f7;
+  --color-on-background: #281715;
+  --color-foreground: #171717;
+
+  --color-primary: #b70011;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #dc2626;
+  --color-on-primary-container: #fff6f5;
+  --color-primary-fixed: #ffdad6;
+  --color-primary-fixed-dim: #ffb4ab;
+  --color-on-primary-fixed: #410002;
+  --color-on-primary-fixed-variant: #93000b;
+  --color-inverse-primary: #ffb4ab;
+
+  --color-secondary: #0051d5;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #316bf3;
+  --color-on-secondary-container: #fefcff;
+  --color-secondary-fixed: #dbe1ff;
+  --color-secondary-fixed-dim: #b4c5ff;
+  --color-on-secondary-fixed: #00174b;
+  --color-on-secondary-fixed-variant: #003ea8;
+
+  --color-tertiary: #005e8d;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #0078b2;
+  --color-on-tertiary-container: #f3f8ff;
+  --color-tertiary-fixed: #cbe6ff;
+  --color-tertiary-fixed-dim: #90cdff;
+  --color-on-tertiary-fixed: #001e30;
+  --color-on-tertiary-fixed-variant: #004b71;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-surface: #fff8f7;
+  --color-on-surface: #281715;
+  --color-surface-variant: #fbdbd7;
+  --color-on-surface-variant: #5c403c;
+  --color-surface-tint: #bf0715;
+  --color-surface-bright: #fff8f7;
+  --color-surface-dim: #f3d3cf;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fff0ee;
+  --color-surface-container: #ffe9e6;
+  --color-surface-container-high: #ffe2de;
+  --color-surface-container-highest: #fbdbd7;
+
+  --color-inverse-surface: #3f2c29;
+  --color-inverse-on-surface: #ffedea;
+
+  --color-outline: #916f6b;
+  --color-outline-variant: #e6bdb8;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-on-background);
+  font-family: var(--font-body-md);
+}
+
+/* Material Symbols icon font (loaded via stylesheet link in layout). */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Frosted-glass panel used on the login visual panel. */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Shared form-input focus ring used across the registration form. */
+.form-input-focus:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
