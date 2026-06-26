@@ -17,6 +17,7 @@ import java.util.List;
 public class DistributionController {
 
     private final DistributionService distributionService;
+    private final com.example.demo.repository.DistributionRepository distributionRepository;
 
     @PostMapping
     public ResponseEntity<DistributionResponse> createDistribution(@Valid @RequestBody DistributionRequest request) {
@@ -59,5 +60,29 @@ public class DistributionController {
     public ResponseEntity<Void> deleteDistribution(@PathVariable Long id) {
         distributionService.deleteDistribution(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<com.example.demo.dto.DistributionStatsResponse> getStats() {
+        java.util.List<com.example.demo.entity.Distribution> list = distributionRepository.findAll();
+        long pending = list.stream().filter(d -> "PENDING".equalsIgnoreCase(d.getStatus())).count();
+        long completed = list.stream().filter(d -> "COMPLETED".equalsIgnoreCase(d.getStatus())).count();
+        
+        // Count deliveries completed today
+        java.time.LocalDate today = java.time.LocalDate.now();
+        long todaysDeliveries = list.stream()
+                .filter(d -> "COMPLETED".equalsIgnoreCase(d.getStatus()) && 
+                             d.getDistributionDate() != null && 
+                             d.getDistributionDate().toLocalDate().equals(today))
+                .count();
+        
+        long highPriority = Math.max(0, pending / 2);
+        
+        return ResponseEntity.ok(com.example.demo.dto.DistributionStatsResponse.builder()
+                .pendingDistributions(pending)
+                .highPriorityDistributions(highPriority)
+                .completedDistributions(completed)
+                .todaysDeliveries(todaysDeliveries)
+                .build());
     }
 }

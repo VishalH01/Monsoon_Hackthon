@@ -14,6 +14,9 @@ public class InventoryResponse {
     private Integer quantity;
     private String unit;
     private String status;
+    private Integer threshold;
+    private String warehouseLocation;
+    private Double pct;
     private Long shelterId;
     private String shelterName;
     private LocalDateTime createdAt;

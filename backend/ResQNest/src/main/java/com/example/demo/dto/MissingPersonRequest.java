@@ -25,6 +25,8 @@ public class MissingPersonRequest {
 
     private String description;
 
+    private String photoUrl;
+
     private String contactName;
 
     private String contactPhone;

@@ -48,6 +48,15 @@ public class UserServiceImpl implements UserService {
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
+        if (request.getFullName() != null) user.setFullName(request.getFullName());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+        if (request.getLocation() != null) user.setLocation(request.getLocation());
+        if (request.getSkills() != null) user.setSkills(request.getSkills());
+        if (request.getAvailability() != null) user.setAvailability(request.getAvailability());
+        if (request.getEmailAlerts() != null) user.setEmailAlerts(request.getEmailAlerts());
+        if (request.getSmsAlerts() != null) user.setSmsAlerts(request.getSmsAlerts());
+        if (request.getPushNotifications() != null) user.setPushNotifications(request.getPushNotifications());
+        
         User updatedUser = userRepository.save(user);
         return mapToResponse(updatedUser);
     }
@@ -113,12 +122,40 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+    @Override
+    @Transactional
+    public UserProfileResponse checkIn(String username, String safetyStatus) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found with username: " + username));
+        user.setSafetyStatus(safetyStatus != null ? safetyStatus : "SAFE");
+        user.setSafetyStatusVerified(true);
+        user.setLastCheckIn(java.time.LocalDateTime.now());
+        User savedUser = userRepository.save(user);
+        return mapToResponse(savedUser);
+    }
+
     private UserProfileResponse mapToResponse(User user) {
         return UserProfileResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole().name())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .location(user.getLocation())
+                .skills(user.getSkills())
+                .availability(user.getAvailability())
+                .acceptTerms(user.getAcceptTerms())
+                .emailAlerts(user.getEmailAlerts())
+                .smsAlerts(user.getSmsAlerts())
+                .pushNotifications(user.getPushNotifications())
+                .safetyStatus(user.getSafetyStatus())
+                .safetyStatusVerified(user.getSafetyStatusVerified())
+                .lastCheckIn(user.getLastCheckIn())
+                .assignedShelterId(user.getAssignedShelterId())
+                .room(user.getRoom())
+                .entryDate(user.getEntryDate())
+                .specialNeeds(user.getSpecialNeeds())
                 .build();
     }
 }

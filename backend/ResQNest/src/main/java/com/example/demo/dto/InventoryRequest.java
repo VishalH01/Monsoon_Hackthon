@@ -22,5 +22,8 @@ public class InventoryRequest {
 
     private String unit;
 
+    private Integer threshold;
+    private String warehouseLocation;
+
     private Long shelterId;
 }

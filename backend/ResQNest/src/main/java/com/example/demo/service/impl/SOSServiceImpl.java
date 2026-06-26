@@ -40,7 +40,8 @@ public class SOSServiceImpl implements SOSService {
     @Override
     @Transactional
     public SOS createSOS(String victimUsername, Double latitude, Double longitude, String description, MultipartFile image,
-                          Integer age, Integer severity, Boolean hasChildren, Boolean isMedicalEmergency, Boolean isDisabled) {
+                          Integer age, Integer severity, Boolean hasChildren, Boolean isMedicalEmergency, Boolean isDisabled,
+                          String location, String disasterType, Integer peopleAffected) {
         User victim = null;
         if (victimUsername != null && !victimUsername.trim().isEmpty()) {
             victim = userRepository.findByUsername(victimUsername)
@@ -62,6 +63,9 @@ public class SOSServiceImpl implements SOSService {
                 .latitude(latitude)
                 .longitude(longitude)
                 .description(description)
+                .location(location)
+                .disasterType(disasterType)
+                .peopleAffected(peopleAffected)
                 .imageUrl(imageUrl)
                 .status(SOSStatus.PENDING)
                 .victim(victim)

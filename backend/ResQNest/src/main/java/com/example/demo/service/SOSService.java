@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface SOSService {
     SOS createSOS(String victimUsername, Double latitude, Double longitude, String description, MultipartFile image,
-                  Integer age, Integer severity, Boolean hasChildren, Boolean isMedicalEmergency, Boolean isDisabled);
+                  Integer age, Integer severity, Boolean hasChildren, Boolean isMedicalEmergency, Boolean isDisabled,
+                  String location, String disasterType, Integer peopleAffected);
     List<SOS> getAllSOS();
     List<SOS> getSOSByStatus(SOSStatus status);
     SOS getSOSById(Long id);

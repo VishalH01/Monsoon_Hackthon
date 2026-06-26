@@ -34,6 +34,8 @@ public class MissingPerson {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    private String photoUrl;
+
     @Column(name = "contact_name")
     private String contactName;
 

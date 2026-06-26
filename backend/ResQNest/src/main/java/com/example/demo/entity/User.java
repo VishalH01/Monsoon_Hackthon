@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +34,35 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    // Extended profile fields
+    private String fullName;
+    private String phone;
+    private String location;
+    private String skills; // Comma-separated
+    private String availability;
+    private Boolean acceptTerms;
+
+    // Notification preferences
+    @Builder.Default
+    private Boolean emailAlerts = true;
+    @Builder.Default
+    private Boolean smsAlerts = false;
+    @Builder.Default
+    private Boolean pushNotifications = true;
+
+    // Safety check-in info
+    @Builder.Default
+    private String safetyStatus = "UNKNOWN";
+    @Builder.Default
+    private Boolean safetyStatusVerified = false;
+    private LocalDateTime lastCheckIn;
+
+    // Shelter Resident info
+    private Long assignedShelterId;
+    private String room;
+    private LocalDateTime entryDate;
+    private String specialNeeds;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -18,6 +18,9 @@ public class SOSResponse {
     private Double latitude;
     private Double longitude;
     private String description;
+    private String location;
+    private String disasterType;
+    private Integer peopleAffected;
     private String imageUrl;
     private String status;
     private String victimUsername;
@@ -49,6 +52,9 @@ public class SOSResponse {
                 .latitude(sos.getLatitude())
                 .longitude(sos.getLongitude())
                 .description(sos.getDescription())
+                .location(sos.getLocation())
+                .disasterType(sos.getDisasterType())
+                .peopleAffected(sos.getPeopleAffected())
                 .imageUrl(sos.getImageUrl())
                 .status(sos.getStatus().name())
                 .victimUsername(sos.getVictim() != null ? sos.getVictim().getUsername() : "Guest")

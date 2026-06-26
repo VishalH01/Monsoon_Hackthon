@@ -43,9 +43,9 @@ public class ReportServiceImpl implements ReportService {
         List<Inventory> inventoryList = inventoryRepository.findAll();
         long totalInvItems = inventoryList.size();
         long totalInvQty = inventoryList.stream().mapToLong(Inventory::getQuantity).sum();
-        long inStockInv = inventoryList.stream().filter(i -> "IN_STOCK".equalsIgnoreCase(i.getStatus())).count();
-        long lowStockInv = inventoryList.stream().filter(i -> "LOW_STOCK".equalsIgnoreCase(i.getStatus())).count();
-        long outOfStockInv = inventoryList.stream().filter(i -> "OUT_OF_STOCK".equalsIgnoreCase(i.getStatus())).count();
+        long inStockInv = inventoryList.stream().filter(i -> "healthy".equalsIgnoreCase(i.getStatus())).count();
+        long lowStockInv = inventoryList.stream().filter(i -> "low".equalsIgnoreCase(i.getStatus())).count();
+        long outOfStockInv = inventoryList.stream().filter(i -> "critical".equalsIgnoreCase(i.getStatus())).count();
 
         // 4. Donation Stats
         List<Donation> donations = donationRepository.findAll();

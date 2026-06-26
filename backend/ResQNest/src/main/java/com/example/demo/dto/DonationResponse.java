@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class DonationResponse {
     private Long id;
     private String donorName;
+    private String donorType;
     private String donorEmail;
     private String donationType;
     private Double amount;

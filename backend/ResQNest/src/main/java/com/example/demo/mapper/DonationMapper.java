@@ -14,6 +14,7 @@ public class DonationMapper {
         }
         return Donation.builder()
                 .donorName(request.getDonorName())
+                .donorType(request.getDonorType())
                 .donorEmail(request.getDonorEmail())
                 .donationType(request.getDonationType())
                 .amount(request.getAmount())
@@ -32,6 +33,7 @@ public class DonationMapper {
         return DonationResponse.builder()
                 .id(donation.getId())
                 .donorName(donation.getDonorName())
+                .donorType(donation.getDonorType())
                 .donorEmail(donation.getDonorEmail())
                 .donationType(donation.getDonationType())
                 .amount(donation.getAmount())
@@ -51,6 +53,9 @@ public class DonationMapper {
         }
         if (request.getDonorName() != null) {
             donation.setDonorName(request.getDonorName());
+        }
+        if (request.getDonorType() != null) {
+            donation.setDonorType(request.getDonorType());
         }
         if (request.getDonorEmail() != null) {
             donation.setDonorEmail(request.getDonorEmail());

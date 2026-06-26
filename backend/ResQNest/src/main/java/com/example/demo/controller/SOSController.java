@@ -32,6 +32,9 @@ public class SOSController {
         private Double latitude;
         private Double longitude;
         private String description;
+        private String location;
+        private String disasterType;
+        private Integer peopleAffected = 1;
         private Integer age = 30;
         private Integer severity = 1;
         private Boolean hasChildren = false;
@@ -59,6 +62,9 @@ public class SOSController {
             @RequestParam("latitude") Double latitude,
             @RequestParam("longitude") Double longitude,
             @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "location", required = false) String location,
+            @RequestParam(value = "disasterType", required = false) String disasterType,
+            @RequestParam(value = "peopleAffected", required = false, defaultValue = "1") Integer peopleAffected,
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "age", required = false, defaultValue = "30") Integer age,
             @RequestParam(value = "severity", required = false, defaultValue = "1") Integer severity,
@@ -69,7 +75,8 @@ public class SOSController {
         String username = (principal != null) ? principal.getName() : null;
         try {
             SOS sos = sosService.createSOS(username, latitude, longitude, description, image,
-                    age, severity, hasChildren, isMedicalEmergency, isDisabled);
+                    age, severity, hasChildren, isMedicalEmergency, isDisabled,
+                    location, disasterType, peopleAffected);
             return ResponseEntity.ok(SOSResponse.fromEntity(sos));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error raising SOS: " + e.getMessage());
@@ -84,7 +91,8 @@ public class SOSController {
         try {
             SOS sos = sosService.createSOS(username, request.getLatitude(), request.getLongitude(),
                     request.getDescription(), null, request.getAge(), request.getSeverity(),
-                    request.getHasChildren(), request.getIsMedicalEmergency(), request.getIsDisabled());
+                    request.getHasChildren(), request.getIsMedicalEmergency(), request.getIsDisabled(),
+                    request.getLocation(), request.getDisasterType(), request.getPeopleAffected());
             return ResponseEntity.ok(SOSResponse.fromEntity(sos));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error raising SOS: " + e.getMessage());

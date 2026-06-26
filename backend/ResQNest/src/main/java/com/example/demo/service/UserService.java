@@ -11,6 +11,7 @@ public interface UserService {
     UserProfileResponse getUserProfile(String username);
     UserProfileResponse updateProfile(String username, UpdateProfileRequest request);
     void changePassword(String username, ChangePasswordRequest request);
+    UserProfileResponse checkIn(String username, String safetyStatus);
     
     // Admin CRUD
     List<UserProfileResponse> getAllUsers();

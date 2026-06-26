@@ -30,6 +30,13 @@ public class ShelterMapper {
             return null;
         }
         int availableBeds = Math.max(0, shelter.getCapacity() - shelter.getOccupied());
+        
+        double capPct = 0.0;
+        if (shelter.getCapacity() != null && shelter.getCapacity() > 0) {
+            capPct = ((double) shelter.getOccupied() * 100.0) / shelter.getCapacity();
+            capPct = Math.round(capPct * 10.0) / 10.0;
+        }
+
         return ShelterResponse.builder()
                 .id(shelter.getId())
                 .name(shelter.getName())
@@ -39,6 +46,7 @@ public class ShelterMapper {
                 .capacity(shelter.getCapacity())
                 .occupied(shelter.getOccupied())
                 .availableBeds(availableBeds)
+                .capacityPct(capPct)
                 .status(shelter.getStatus())
                 .contactPhone(shelter.getContactPhone())
                 .amenities(shelter.getAmenities())

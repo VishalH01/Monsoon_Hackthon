@@ -44,4 +44,20 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @lombok.Data
+    @lombok.NoArgsConstructor
+    @lombok.AllArgsConstructor
+    public static class CheckInRequest {
+        private String safetyStatus;
+    }
+
+    @PostMapping("/check-in")
+    public ResponseEntity<UserProfileResponse> checkIn(
+            Principal principal,
+            @RequestBody(required = false) CheckInRequest request) {
+        String status = (request != null) ? request.getSafetyStatus() : "SAFE";
+        UserProfileResponse response = userService.checkIn(principal.getName(), status);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -20,6 +20,7 @@ public class MissingPersonMapper {
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .description(request.getDescription())
+                .photoUrl(request.getPhotoUrl())
                 .contactName(request.getContactName())
                 .contactPhone(request.getContactPhone())
                 .status(request.getStatus() != null ? request.getStatus() : "MISSING")
@@ -39,6 +40,7 @@ public class MissingPersonMapper {
                 .latitude(missingPerson.getLatitude())
                 .longitude(missingPerson.getLongitude())
                 .description(missingPerson.getDescription())
+                .photoUrl(missingPerson.getPhotoUrl())
                 .contactName(missingPerson.getContactName())
                 .contactPhone(missingPerson.getContactPhone())
                 .status(missingPerson.getStatus())
@@ -71,6 +73,9 @@ public class MissingPersonMapper {
         }
         if (request.getDescription() != null) {
             missingPerson.setDescription(request.getDescription());
+        }
+        if (request.getPhotoUrl() != null) {
+            missingPerson.setPhotoUrl(request.getPhotoUrl());
         }
         if (request.getContactName() != null) {
             missingPerson.setContactName(request.getContactName());

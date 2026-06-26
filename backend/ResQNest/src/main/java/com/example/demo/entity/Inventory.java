@@ -29,6 +29,9 @@ public class Inventory {
 
     private String unit;
 
+    @Column(name = "warehouse_location")
+    private String warehouseLocation;
+
     @Column(nullable = false)
     private String status; // "IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK"
 
@@ -66,11 +69,11 @@ public class Inventory {
 
     private void updateStatus() {
         if (quantity <= 0) {
-            status = "OUT_OF_STOCK";
+            status = "critical";
         } else if (quantity <= threshold) {
-            status = "LOW_STOCK";
+            status = "low";
         } else {
-            status = "IN_STOCK";
+            status = "healthy";
         }
     }
 }

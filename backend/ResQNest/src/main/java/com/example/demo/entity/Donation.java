@@ -20,6 +20,9 @@ public class Donation {
     @Column(name = "donor_name", nullable = false)
     private String donorName;
 
+    @Column(name = "donor_type")
+    private String donorType;
+
     @Column(name = "donor_email", nullable = false)
     private String donorEmail;
 

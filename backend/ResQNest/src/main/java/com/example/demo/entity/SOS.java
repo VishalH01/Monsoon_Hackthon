@@ -25,6 +25,10 @@ public class SOS {
 
     private String description;
 
+    private String location; // text location name
+    private String disasterType; // e.g. Flood, Earthquake, Wildfire, etc.
+    private Integer peopleAffected;
+
     private String imageUrl;
 
     // Prioritization Criteria

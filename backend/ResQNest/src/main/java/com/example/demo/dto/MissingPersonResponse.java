@@ -16,6 +16,7 @@ public class MissingPersonResponse {
     private Double latitude;
     private Double longitude;
     private String description;
+    private String photoUrl;
     private String contactName;
     private String contactPhone;
     private String status;

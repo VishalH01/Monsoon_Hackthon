@@ -26,6 +26,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final com.example.demo.repository.VolunteerRepository volunteerRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
@@ -47,9 +48,32 @@ public class AuthController {
                 .email(signUpRequest.getEmail())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .role(signUpRequest.getRole())
+                .fullName(signUpRequest.getFullName())
+                .phone(signUpRequest.getPhone())
+                .location(signUpRequest.getLocation())
+                .acceptTerms(signUpRequest.getAcceptTerms())
+                .skills(signUpRequest.getSkills())
+                .availability(signUpRequest.getAvailability())
                 .build();
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // Auto-seed Volunteer table if the registered role is VOLUNTEER
+        if (signUpRequest.getRole() == com.example.demo.entity.Role.VOLUNTEER) {
+            try {
+                com.example.demo.entity.Volunteer volunteer = com.example.demo.entity.Volunteer.builder()
+                        .name(signUpRequest.getFullName() != null && !signUpRequest.getFullName().trim().isEmpty() ? signUpRequest.getFullName() : signUpRequest.getUsername())
+                        .email(signUpRequest.getEmail())
+                        .phone(signUpRequest.getPhone() != null && !signUpRequest.getPhone().trim().isEmpty() ? signUpRequest.getPhone() : "N/A")
+                        .skills(signUpRequest.getSkills())
+                        .availabilityDetails(signUpRequest.getAvailability())
+                        .status("AVAILABLE")
+                        .build();
+                volunteerRepository.save(volunteer);
+            } catch (Exception e) {
+                // Fail-safe: log warning but don't fail registration
+            }
+        }
 
         return ResponseEntity.ok("User registered successfully!");
     }

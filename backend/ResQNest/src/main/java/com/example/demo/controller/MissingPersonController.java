@@ -17,6 +17,7 @@ import java.util.List;
 public class MissingPersonController {
 
     private final MissingPersonService missingPersonService;
+    private final com.example.demo.repository.MissingPersonRepository missingPersonRepository;
 
     @PostMapping
     public ResponseEntity<MissingPersonResponse> createMissingPerson(@Valid @RequestBody MissingPersonRequest request) {
@@ -59,5 +60,20 @@ public class MissingPersonController {
     public ResponseEntity<Void> deleteMissingPerson(@PathVariable Long id) {
         missingPersonService.deleteMissingPerson(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<com.example.demo.dto.MissingPersonStatsResponse> getStats() {
+        long total = missingPersonRepository.count();
+        java.util.List<com.example.demo.entity.MissingPerson> list = missingPersonRepository.findAll();
+        long missing = list.stream().filter(m -> "MISSING".equalsIgnoreCase(m.getStatus())).count();
+        long foundSafe = list.stream().filter(m -> "FOUND".equalsIgnoreCase(m.getStatus()) || "REUNITED".equalsIgnoreCase(m.getStatus())).count();
+        
+        return ResponseEntity.ok(com.example.demo.dto.MissingPersonStatsResponse.builder()
+                .totalReported(total)
+                .currentlyMissing(missing)
+                .foundSafe(foundSafe)
+                .identityPending(0)
+                .build());
     }
 }

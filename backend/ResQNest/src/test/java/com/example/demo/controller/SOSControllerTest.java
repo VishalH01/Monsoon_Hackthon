@@ -56,7 +56,10 @@ public class SOSControllerTest {
                 Mockito.anyInt(),
                 Mockito.anyBoolean(),
                 Mockito.anyBoolean(),
-                Mockito.anyBoolean()
+                Mockito.anyBoolean(),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any()
         )).thenReturn(mockSos);
 
         MockMultipartFile imageFile = new MockMultipartFile(
@@ -100,11 +103,21 @@ public class SOSControllerTest {
                 Mockito.eq(1),
                 Mockito.eq(false),
                 Mockito.eq(false),
-                Mockito.eq(false)
+                Mockito.eq(false),
+                Mockito.any(),
+                Mockito.any(),
+                Mockito.any()
         )).thenReturn(mockSos);
 
-        SOSController.SOSCreateRequest request = new SOSController.SOSCreateRequest(
-                12.34, 56.78, "JSON Help", 30, 1, false, false, false);
+        SOSController.SOSCreateRequest request = new SOSController.SOSCreateRequest();
+        request.setLatitude(12.34);
+        request.setLongitude(56.78);
+        request.setDescription("JSON Help");
+        request.setAge(30);
+        request.setSeverity(1);
+        request.setHasChildren(false);
+        request.setIsMedicalEmergency(false);
+        request.setIsDisabled(false);
 
         mockMvc.perform(post("/sos")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -16,4 +16,13 @@ public class UpdateProfileRequest {
     @Email(message = "Please provide a valid email address")
     @Size(max = 100, message = "Email must be less than 100 characters")
     private String email;
+
+    private String fullName;
+    private String phone;
+    private String location;
+    private String skills;
+    private String availability;
+    private Boolean emailAlerts;
+    private Boolean smsAlerts;
+    private Boolean pushNotifications;
 }

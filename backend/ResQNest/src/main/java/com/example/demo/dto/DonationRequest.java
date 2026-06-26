@@ -14,6 +14,8 @@ public class DonationRequest {
     @NotBlank(message = "Donor name is required")
     private String donorName;
 
+    private String donorType;
+
     @NotBlank(message = "Donor email is required")
     @Email(message = "Invalid email format")
     private String donorEmail;

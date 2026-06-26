@@ -18,6 +18,8 @@ public class InventoryMapper {
                 .category(request.getCategory())
                 .quantity(request.getQuantity())
                 .unit(request.getUnit())
+                .threshold(request.getThreshold())
+                .warehouseLocation(request.getWarehouseLocation())
                 .shelter(shelter)
                 .build();
     }
@@ -32,6 +34,13 @@ public class InventoryMapper {
             shelterId = inventory.getShelter().getId();
             shelterName = inventory.getShelter().getName();
         }
+        
+        double pct = 100.0;
+        if (inventory.getThreshold() != null && inventory.getThreshold() > 0) {
+            pct = ((double) inventory.getQuantity() * 100.0) / inventory.getThreshold();
+            pct = Math.round(pct * 10.0) / 10.0;
+        }
+
         return InventoryResponse.builder()
                 .id(inventory.getId())
                 .itemName(inventory.getItemName())
@@ -39,6 +48,9 @@ public class InventoryMapper {
                 .quantity(inventory.getQuantity())
                 .unit(inventory.getUnit())
                 .status(inventory.getStatus())
+                .threshold(inventory.getThreshold())
+                .warehouseLocation(inventory.getWarehouseLocation())
+                .pct(pct)
                 .shelterId(shelterId)
                 .shelterName(shelterName)
                 .createdAt(inventory.getCreatedAt())
@@ -61,6 +73,12 @@ public class InventoryMapper {
         }
         if (request.getUnit() != null) {
             inventory.setUnit(request.getUnit());
+        }
+        if (request.getThreshold() != null) {
+            inventory.setThreshold(request.getThreshold());
+        }
+        if (request.getWarehouseLocation() != null) {
+            inventory.setWarehouseLocation(request.getWarehouseLocation());
         }
         // Always assign the resolved shelter (can be null)
         inventory.setShelter(shelter);

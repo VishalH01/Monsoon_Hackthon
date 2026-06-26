@@ -25,4 +25,13 @@ public class RegisterRequest {
 
     @NotNull(message = "Role is required")
     private Role role;
+
+    private String fullName;
+    private String phone;
+    private String location;
+    private Boolean acceptTerms;
+    
+    // Volunteer specific fields
+    private String skills; 
+    private String availability;
 }

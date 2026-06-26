@@ -16,6 +16,8 @@ public class ShelterResponse {
     private Integer capacity;
     private Integer occupied;
     private Integer availableBeds;
+    private Double distance;
+    private Double capacityPct;
     private String status;
     private String contactPhone;
     private String amenities;
