@@ -13,19 +13,38 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/qr")
+@RequestMapping({"/api/v1/qr", "/qr"})
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class QRController {
 
     private final QRService qrService;
 
-    @PostMapping("/generate/{sosId}")
+    @lombok.Data
+    @lombok.NoArgsConstructor
+    @lombok.AllArgsConstructor
+    public static class QRGenerateRequest {
+        private Long sosId;
+    }
+
+    @PostMapping({"/generate/{sosId}", "/generate"})
     @PreAuthorize("hasRole('VICTIM') or hasRole('ADMIN')")
     public ResponseEntity<QRGenerateResponse> generateQR(
-            @PathVariable Long sosId,
+            @PathVariable(required = false) Long sosId,
+            @RequestParam(required = false) Long sosIdParam,
+            @RequestBody(required = false) QRGenerateRequest body,
             Principal principal) {
-        QRGenerateResponse response = qrService.generateQR(sosId, principal.getName());
+        Long targetSosId = sosId;
+        if (targetSosId == null) {
+            targetSosId = sosIdParam;
+        }
+        if (targetSosId == null && body != null) {
+            targetSosId = body.getSosId();
+        }
+        if (targetSosId == null) {
+            throw new IllegalArgumentException("Error: sosId must be provided in path, parameter, or body");
+        }
+        QRGenerateResponse response = qrService.generateQR(targetSosId, principal.getName());
         return ResponseEntity.ok(response);
     }
 

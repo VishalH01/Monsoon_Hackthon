@@ -60,7 +60,7 @@ You can restrict endpoint access using Spring's `@PreAuthorize` annotation (e.g.
 ### 1. Authentication Endpoints
 
 #### 📝 Register a New User
-- **URL**: `/api/auth/register`
+- **URL**: `/auth/register` (also supports `/api/auth/register`)
 - **Method**: `POST`
 - **Request Body**:
   ```json
@@ -74,7 +74,7 @@ You can restrict endpoint access using Spring's `@PreAuthorize` annotation (e.g.
 - **Response**: `200 OK` `"User registered successfully!"`
 
 #### 🔑 Login User
-- **URL**: `/api/auth/login`
+- **URL**: `/auth/login` (also supports `/api/auth/login`)
 - **Method**: `POST`
 - **Request Body**:
   ```json
@@ -100,7 +100,7 @@ You can restrict endpoint access using Spring's `@PreAuthorize` annotation (e.g.
 Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_token>`
 
 #### 👤 Get Current User Profile
-- **URL**: `/api/users/profile`
+- **URL**: `/users/profile` (also supports `/api/users/profile`)
 - **Method**: `GET`
 - **Response**: `200 OK`
   ```json
@@ -113,7 +113,7 @@ Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_
   ```
 
 #### ✏️ Update Profile Details
-- **URL**: `/api/users/profile`
+- **URL**: `/users/profile` (also supports `/api/users/profile`)
 - **Method**: `PUT`
 - **Request Body**:
   ```json
@@ -125,7 +125,7 @@ Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_
 - **Response**: `200 OK` (returns updated UserProfileResponse)
 
 #### 🔒 Change Password
-- **URL**: `/api/users/change-password`
+- **URL**: `/users/change-password` (also supports `/api/users/change-password`)
 - **Method**: `PUT`
 - **Request Body**:
   ```json
@@ -157,14 +157,19 @@ Distress calls, volunteer assignments, and mission state flows.
 
 #### 🚨 Raise One-Click SOS (Victim / Guest)
 Submit an emergency distress call. Supports optional text description and optional photo attachment.
-- **URL**: `/api/sos`
+- **URL**: `/sos` (also supports `/api/sos` and `/api/v1/sos`)
 - **Method**: `POST`
-- **Content-Type**: `multipart/form-data`
-- **Form Parameters**:
+- **Content-Type**: `multipart/form-data` or `application/json` (optional)
+- **Form Parameters (for multipart/form-data)**:
   - `latitude` (Double, Required) - GPS Latitude.
   - `longitude` (Double, Required) - GPS Longitude.
   - `description` (String, Optional) - Short detail about the situation.
   - `image` (File, Optional) - Image/photo file from camera or gallery.
+  - `age` (Integer, Optional, Default: 30) - Age of victim.
+  - `severity` (Integer, Optional, Default: 1) - Severity level.
+  - `hasChildren` (Boolean, Optional, Default: false) - Whether children are present.
+  - `isMedicalEmergency` (Boolean, Optional, Default: false) - Medical emergency flag.
+  - `isDisabled` (Boolean, Optional, Default: false) - Disabled flag.
 - **Response**: `200 OK`
   ```json
   {
@@ -174,6 +179,7 @@ Submit an emergency distress call. Supports optional text description and option
     "description": "Flooding near the main road",
     "imageUrl": "/uploads/a3b1-4c6e-8f92-image.jpg",
     "status": "PENDING",
+    "priority": "HIGH",
     "victimUsername": "john_doe", // "Guest" if submitted unauthenticated
     "volunteerUsername": null,
     "createdAt": "2026-06-26T12:00:00",
@@ -181,23 +187,29 @@ Submit an emergency distress call. Supports optional text description and option
   }
   ```
 
-#### 📋 View All SOS Alerts (Admin)
-- **URL**: `/api/admin/sos`
+#### 📋 View All SOS Alerts (Admin / Volunteer / NGO)
+- **URL**: `/sos` (also supports `/api/sos` and `/api/v1/sos`)
 - **Method**: `GET`
 - **Query Parameter**: `status` (Optional, values: `PENDING`, `ASSIGNED`, `ACTIVE`, `RESOLVED`)
-- **Response**: `200 OK` (list of SOSResponse objects)
+- **Response**: `200 OK` (list of SOSResponse objects sorted dynamically by real-time waiting-time-adjusted priority scores)
 
-#### 🤝 Assign Volunteer to Mission (Admin)
-- **URL**: `/api/admin/sos/{id}/assign`
+#### 🤝 Update SOS Status Directly (Admin / NGO / Volunteer)
+- **URL**: `/sos/{id}` (also supports `/api/sos/{id}` and `/api/v1/sos/{id}`)
 - **Method**: `PUT`
-- **Query Parameter**: `volunteerId` (Required, ID of the volunteer user)
+- **Query Parameter or Request Body**: `status` (Required, values: `PENDING`, `ASSIGNED`, `ACTIVE`, `RESOLVED`)
+- **Response**: `200 OK` (returns updated SOSResponse)
+
+#### 🤝 Assign Volunteer to Mission (Admin / NGO)
+- **URL**: `/sos/{id}/assign` (also supports `/api/sos/{id}/assign` and `/api/v1/sos/{id}/assign`)
+- **Method**: `PUT`
+- **Query Parameter or Request Body**: `volunteerId` (Required)
 - **Response**: `200 OK` (returns updated SOSResponse with status `ASSIGNED`)
 
-#### 🤝 Update SOS Status Directly (Admin)
-- **URL**: `/api/admin/sos/{id}/status`
-- **Method**: `PUT`
-- **Query Parameter**: `status` (Required, values: `PENDING`, `ASSIGNED`, `ACTIVE`, `RESOLVED`)
-- **Response**: `200 OK` (returns updated SOSResponse)
+#### ⚡ Recalculate Dynamic Priority Scores (Admin Only)
+Triggers dynamic recalculation of priority scores for all active calls based on waiting times and logs the transitions.
+- **URL**: `/priority` (also supports `/api/priority` and `/api/v1/priority`)
+- **Method**: `POST`
+- **Response**: `200 OK` `"Dynamic priorities recalculated and logged successfully!"`
 
 #### 🗺️ View My Assigned Missions (Volunteer)
 - **URL**: `/api/volunteer/sos/my-missions`
@@ -220,7 +232,7 @@ Submit an emergency distress call. Supports optional text description and option
 Provides aggregated statistics for Admins and NGOs to coordinate disaster response.
 
 #### 📊 Get Dashboard Analytics
-- **URL**: `/api/dashboard`
+- **URL**: `/dashboard` (also supports `/api/dashboard`)
 - **Method**: `GET`
 - **Allowed Roles**: `ADMIN`, `NGO`
 - **Response**: `200 OK`
@@ -391,9 +403,15 @@ Provides secure, time-sensitive QR code generation and verification to confirm r
 
 #### 🎫 Generate Verification QR Code
 Generates a time-sensitive verification token (valid for 15 minutes) and returns a scan-ready Base64-encoded PNG image.
-- **URL**: `/api/v1/qr/generate/{sosId}`
+- **URL**: `/qr/generate` or `/qr/generate/{sosId}` (also supports `/api/v1/qr/generate/{sosId}`)
 - **Method**: `POST`
 - **Allowed Roles**: `VICTIM` (must own the SOS alert), `ADMIN`
+- **Parameters**: `sosId` can be provided as a Path Variable, a Query Parameter (`?sosId=...`), or in the JSON Request Body:
+  ```json
+  {
+    "sosId": 12
+  }
+  ```
 - **Response**: `200 OK`
   ```json
   {
@@ -406,7 +424,7 @@ Generates a time-sensitive verification token (valid for 15 minutes) and returns
 
 #### 🎫 Verify QR and Resolve Alert
 Verifies the scanned QR token. If the token is valid, has not expired, and the verifying user is the assigned volunteer (or admin), the SOS alert is marked as `RESOLVED`, the token is cleared, and WebSocket update events are broadcast.
-- **URL**: `/api/v1/qr/verify`
+- **URL**: `/qr/verify` (also supports `/api/v1/qr/verify`)
 - **Method**: `POST`
 - **Allowed Roles**: `VOLUNTEER` (must be assigned to the SOS alert), `ADMIN`
 - **Request Body**:

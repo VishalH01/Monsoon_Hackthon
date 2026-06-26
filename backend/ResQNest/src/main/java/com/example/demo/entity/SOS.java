@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sos_alerts")
+@Table(name = "sos_requests")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,10 +50,6 @@ public class SOS {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "volunteer_id")
     private User volunteer;
-
-    private String qrVerificationToken;
-
-    private LocalDateTime qrGeneratedAt;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

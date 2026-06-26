@@ -7,8 +7,10 @@ import com.example.demo.entity.Role;
 import com.example.demo.entity.SOS;
 import com.example.demo.entity.SOSStatus;
 import com.example.demo.entity.User;
+import com.example.demo.entity.QRCode;
 import com.example.demo.repository.SOSRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.QRCodeRepository;
 import com.example.demo.service.QRService;
 import com.example.demo.service.WebSocketService;
 import com.google.zxing.BarcodeFormat;
@@ -33,6 +35,7 @@ public class QRServiceImpl implements QRService {
 
     private final SOSRepository sosRepository;
     private final UserRepository userRepository;
+    private final QRCodeRepository qrCodeRepository;
     private final WebSocketService webSocketService;
 
     @Override
@@ -56,13 +59,18 @@ public class QRServiceImpl implements QRService {
             throw new IllegalArgumentException("Error: Cannot generate QR code for an already resolved rescue alert!");
         }
 
-        // Generate time-sensitive token
-        String token = UUID.randomUUID().toString();
-        sos.setQrVerificationToken(token);
-        sos.setQrGeneratedAt(LocalDateTime.now());
-        sosRepository.save(sos);
+        // Delete any existing QR code for this SOS request
+        qrCodeRepository.findBySosId(sosId).ifPresent(qrCodeRepository::delete);
 
-        LocalDateTime expiresAt = sos.getQrGeneratedAt().plusMinutes(15);
+        // Generate time-sensitive token and save to qr_codes table
+        String token = UUID.randomUUID().toString();
+        QRCode qrCode = QRCode.builder()
+                .sosId(sosId)
+                .token(token)
+                .build();
+        qrCodeRepository.save(qrCode);
+
+        LocalDateTime expiresAt = qrCode.getExpiresAt();
 
         // Generate scan payload
         String qrPayload = String.format("{\"sosId\":%d,\"token\":\"%s\"}", sosId, token);
@@ -92,17 +100,16 @@ public class QRServiceImpl implements QRService {
             throw new IllegalArgumentException("Error: Rescue alert is already resolved!");
         }
 
-        if (sos.getQrVerificationToken() == null || sos.getQrVerificationToken().trim().isEmpty()) {
-            throw new IllegalArgumentException("Error: No active QR verification token has been generated for this alert. Please generate a QR code first!");
-        }
+        QRCode qrCode = qrCodeRepository.findBySosId(sosId)
+                .orElseThrow(() -> new IllegalArgumentException("Error: No active QR verification token has been generated for this alert. Please generate a QR code first!"));
 
         // 1. Verify token match
-        if (!sos.getQrVerificationToken().equals(token)) {
+        if (!qrCode.getToken().equals(token)) {
             throw new IllegalArgumentException("Error: Invalid verification token!");
         }
 
         // 2. Verify token age (15 mins limit)
-        if (LocalDateTime.now().isAfter(sos.getQrGeneratedAt().plusMinutes(15))) {
+        if (LocalDateTime.now().isAfter(qrCode.getExpiresAt())) {
             throw new IllegalArgumentException("Error: QR verification token has expired (15 minutes validity). Please generate a new QR code!");
         }
 
@@ -117,9 +124,9 @@ public class QRServiceImpl implements QRService {
             }
         }
 
-        // Resolve the SOS alert
+        // Resolve the SOS alert and delete the QR record
         sos.setStatus(SOSStatus.RESOLVED);
-        sos.setQrVerificationToken(null); // Clear token
+        qrCodeRepository.delete(qrCode); // Delete QR record
         SOS savedSos = sosRepository.save(sos);
 
         log.info("SOS Alert ID {} successfully verified and resolved via QR Code by volunteer {}", sosId, volunteerUsername);

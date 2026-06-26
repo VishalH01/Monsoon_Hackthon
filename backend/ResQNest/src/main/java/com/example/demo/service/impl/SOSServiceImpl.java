@@ -5,8 +5,10 @@ import com.example.demo.entity.SOS;
 import com.example.demo.entity.SOSPriority;
 import com.example.demo.entity.SOSStatus;
 import com.example.demo.entity.User;
+import com.example.demo.entity.PriorityLog;
 import com.example.demo.repository.SOSRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.PriorityLogRepository;
 import com.example.demo.dto.SOSResponse;
 import com.example.demo.service.FileStorageService;
 import com.example.demo.service.PriorityCalculationService;
@@ -33,6 +35,7 @@ public class SOSServiceImpl implements SOSService {
     private final FileStorageService fileStorageService;
     private final PriorityCalculationService priorityCalculationService;
     private final WebSocketService webSocketService;
+    private final PriorityLogRepository priorityLogRepository;
 
     @Override
     @Transactional
@@ -233,6 +236,15 @@ public class SOSServiceImpl implements SOSService {
             
             if (sos.getPriority() != newPriority) {
                 log.info("SOS Alert ID {} priority elevated: {} -> {}", sos.getId(), sos.getPriority(), newPriority);
+                
+                PriorityLog logEntry = PriorityLog.builder()
+                        .sosId(sos.getId())
+                        .oldPriority(sos.getPriority())
+                        .newPriority(newPriority)
+                        .score(dynamicScore)
+                        .build();
+                priorityLogRepository.save(logEntry);
+
                 sos.setPriority(newPriority);
                 sosRepository.save(sos);
                 count++;

@@ -21,4 +21,7 @@ public interface SOSService {
     SOS acceptMission(Long id, String volunteerUsername);
     SOS completeMission(Long id, String volunteerUsername);
     List<SOS> getMissionsForVolunteer(String volunteerUsername);
+    
+    // Background recalculation trigger
+    void autoUpdatePriorities();
 }

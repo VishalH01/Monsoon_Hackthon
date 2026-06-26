@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping({"/api/users", "/users"})
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
