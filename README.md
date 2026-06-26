@@ -112,16 +112,3 @@ Here is how the database tables are structured and connected:
 | **`qr_codes`** | Active QR verification tokens. | `id`, `sos_id`, `token`, `expires_at` | - |
 
 ---
-
-## 6. Key Talking Points for Your Examiners
-
-When explaining this project to your examiners, make sure to highlight these three key design choices:
-
-1. **Why we chose JWT (JSON Web Tokens) for security**:  
-   "Instead of saving session details in the server's memory (which limits scalability), we use signed JWT tokens. The client stores the token, and the server validates it statelessly for every request. This is the industry standard for modern web applications."
-   
-2. **The value of the Dynamic Priority Escalation algorithm**:  
-   "A simple priority system ignores low-priority calls when high-priority ones keep coming. Our backend uses a background scheduler that automatically increases a victim's priority score the longer they wait. This prevents starvation and ensures everyone eventually gets rescued."
-   
-3. **How we secured the relief handovers**:  
-   "To ensure supplies are delivered to the right people, we built a time-sensitive QR verification mechanism. The victim generates a QR code that expires in 15 minutes. The volunteer scans it, the server decrypts the token, validates the signature, and automatically marks the mission as resolved in one transaction."
