@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/v1/volunteers/**").permitAll()
                         .requestMatchers("/api/v1/shelters/**").permitAll()
+                        .requestMatchers("/ws/live/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -272,7 +272,121 @@ Provides aggregated statistics for Admins and NGOs to coordinate disaster respon
 
 ---
 
-### 5. Test Endpoints (Verifying Access Control)
+### 5. WebSocket Real-time Updates Endpoint
+Provides real-time updates to connected clients (Admins, NGOs, and Volunteers) via a raw WebSocket channel.
+
+- **WebSocket URL**: `ws://localhost:8080/ws/live`
+- **Method**: Connection Handshake (`GET` upgrade request)
+- **Allowed Roles**: Public handshake permitted; payload-based message parsing is handled server-side.
+
+#### 📡 Outgoing Event Payloads (Server-to-Client)
+The server pushes JSON messages when events occur:
+
+1. **`NEW_SOS`**: Emitted when a new emergency distress call is submitted.
+   ```json
+   {
+     "type": "NEW_SOS",
+     "data": {
+       "id": 12,
+       "latitude": 12.9716,
+       "longitude": 77.5946,
+       "description": "Rising floodwaters",
+       "imageUrl": "/uploads/image.jpg",
+       "status": "PENDING",
+       "victimUsername": "victim_user",
+       "volunteerUsername": null,
+       "createdAt": "2026-06-26T13:10:00",
+       "updatedAt": "2026-06-26T13:10:00"
+     }
+   }
+   ```
+
+2. **`VOLUNTEER_ACCEPTED`**: Emitted when a volunteer is assigned to or accepts a rescue mission.
+   ```json
+   {
+     "type": "VOLUNTEER_ACCEPTED",
+     "data": {
+       "id": 12,
+       "latitude": 12.9716,
+       "longitude": 77.5946,
+       "description": "Rising floodwaters",
+       "imageUrl": "/uploads/image.jpg",
+       "status": "ACTIVE",
+       "victimUsername": "victim_user",
+       "volunteerUsername": "volunteer_bob",
+       "createdAt": "2026-06-26T13:10:00",
+       "updatedAt": "2026-06-26T13:12:00"
+     }
+   }
+   ```
+
+3. **`RELIEF_DELIVERED`**: Emitted when a volunteer successfully completes/resolves a rescue mission.
+   ```json
+   {
+     "type": "RELIEF_DELIVERED",
+     "data": {
+       "id": 12,
+       "latitude": 12.9716,
+       "longitude": 77.5946,
+       "description": "Rising floodwaters",
+       "imageUrl": "/uploads/image.jpg",
+       "status": "RESOLVED",
+       "victimUsername": "victim_user",
+       "volunteerUsername": "volunteer_bob",
+       "createdAt": "2026-06-26T13:10:00",
+       "updatedAt": "2026-06-26T13:15:00"
+     }
+   }
+   ```
+
+4. **`DASHBOARD_UPDATE`**: Emitted immediately following any of the events above. Contains the fully updated metrics matching the `/api/dashboard` REST response.
+   ```json
+   {
+     "type": "DASHBOARD_UPDATE",
+     "data": {
+       "activeSOSCount": 2,
+       "resolvedSOSCount": 13,
+       "volunteersOnline": 8,
+       "sheltersAvailable": 2,
+       "inventoryAlertsCount": 2,
+       "shelterOccupancyRate": 40.0,
+       "activeMissionsCount": 1,
+       "criticalInventoryAlerts": [...],
+       "recentSOSAlerts": [...]
+     }
+   }
+   ```
+
+#### 📡 Incoming Event Payloads (Client-to-Server)
+Clients (specifically Volunteers) can push coordinates in real-time. The server will update the volunteer coordinates in the database and broadcast a `VOLUNTEER_LOCATION` message to all active WebSocket sessions.
+
+- **`VOLUNTEER_LOCATION`** (Client-to-Server structure):
+  ```json
+  {
+    "type": "VOLUNTEER_LOCATION",
+    "data": {
+      "volunteerId": 3,
+      "latitude": 12.9725,
+      "longitude": 77.5940
+    }
+  }
+  ```
+- **Broadcast event** (Server-to-Client broadcast structure):
+  ```json
+  {
+    "type": "VOLUNTEER_LOCATION",
+    "data": {
+      "volunteerId": 3,
+      "latitude": 12.9725,
+      "longitude": 77.5940,
+      "name": "Alice Smith"
+    }
+  }
+  ```
+
+---
+
+### 6. Test Endpoints (Verifying Access Control)
 Include the JWT token in your request headers: `Authorization: Bearer <your_jwt_token>`
 
 | Endpoint | Method | Allowed Roles | Description |
