@@ -219,6 +219,49 @@ Tracks and reports missing individuals in disaster areas to aid in search, recov
 
 ---
 
+### 7. Reports API (`/api/v1/reports`)
+
+Generates aggregated operation reports across the entire system.
+
+| Method | Endpoint | Description | Query Parameters |
+|--------|----------|-------------|------------------|
+| `GET` | `/api/v1/reports/summary` | Retrieve aggregated dashboard-ready statistics across all entities | None |
+
+#### Sample Response Body (`GET /api/v1/reports/summary`)
+```json
+{
+  "totalVolunteers": 12,
+  "availableVolunteers": 8,
+  "busyVolunteers": 3,
+  "unavailableVolunteers": 1,
+  "totalShelters": 5,
+  "shelterTotalCapacity": 500,
+  "shelterTotalOccupied": 320,
+  "shelterAvailableBeds": 180,
+  "activeShelters": 4,
+  "fullShelters": 1,
+  "inactiveShelters": 0,
+  "totalInventoryItems": 15,
+  "totalInventoryQuantity": 1250,
+  "inStockInventoryItems": 10,
+  "lowStockInventoryItems": 3,
+  "outOfStockInventoryItems": 2,
+  "totalDonations": 8,
+  "totalDonatedAmount": 12500.5,
+  "totalDonatedItemsQuantity": 450,
+  "totalDistributions": 6,
+  "completedDistributions": 4,
+  "pendingDistributions": 2,
+  "cancelledDistributions": 0,
+  "totalMissingReports": 5,
+  "missingPersons": 3,
+  "foundPersons": 1,
+  "reunitedPersons": 1
+}
+```
+
+---
+
 ## Global Exception Handler
 
 Common error responses are mapped to standard HTTP statuses with a clean JSON body:
