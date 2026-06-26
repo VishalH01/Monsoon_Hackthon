@@ -1,6 +1,6 @@
 # Frontend Workspace
 
-The ReliefLink frontend lives in [`resqnest/`](./resqnest) — a **Next.js 16 +
+The ResQNest frontend lives in [`resqnest/`](./resqnest) — a **Next.js 16 +
 React 19 + Tailwind CSS v4** app.
 
 ## Quick Start

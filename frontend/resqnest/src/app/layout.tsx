@@ -13,10 +13,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ReliefLink | Disaster Relief Network",
+  title: "ResQNest | Disaster Relief Network",
   description:
     "Mission-critical disaster management system for rapid deployment, resource tracking, and field coordination during emergency operations.",
 };
+
+import WebSocketAlerts from "@/app/components/WebSocketAlerts";
 
 export default function RootLayout({
   children,
@@ -29,13 +31,16 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} h-full scroll-smooth antialiased`}
     >
       <head>
-        {/* Material Symbols icon font used across the ReliefLink pages. */}
+        {/* Material Symbols icon font used across the ResQNest pages. */}
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <WebSocketAlerts />
+      </body>
     </html>
   );
 }
